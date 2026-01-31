@@ -6,6 +6,42 @@
 <title>Modal Pop-up test</title>
 
 <style>
+
+.open-modal {
+  appearance: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
+}
+
+.open-modal:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 18px rgba(59, 130, 246, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  filter: brightness(1.05);
+}
+
+.open-modal:focus-visible {
+  outline: 3px solid rgba(99, 102, 241, 0.6);
+  outline-offset: 2px;
+}
+  
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -85,6 +121,7 @@
 
 <template id="firstButton">
   <p>This it the first button's modal pop-up.</p>
+  <p>I included a button here to show that you can have other templates</p>
   <button>This button doesn't do a dang thing</button>
 </template>
 
