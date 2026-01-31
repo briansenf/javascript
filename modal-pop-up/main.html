@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modal Pop-up test</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Modal Pop-up test</title>
 
 <style>
- .modal-overlay {
+.modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(2, 6, 23, 0.75);
@@ -31,10 +31,9 @@
   width: 100%;
   max-width: 32rem;
   padding: 1.5rem;
-
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.7);
-
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   transform: translateY(12px) scale(0.97);
   opacity: 0;
   transition: transform 220ms ease, opacity 220ms ease;
@@ -49,68 +48,62 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--accent-border);
+  border-bottom: 1px solid var(--accent-border, #334155);
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 }
 
 .modal-title {
-  color: var(--accent);
+  color: var(--accent, #38bdf8);
   font-size: 1.25rem;
   font-weight: 600;
 }
 
 .modal-close {
-  background: var(--accent-soft);
-  border: 1px solid var(--accent-border);
-  color: var(--accent);
+  cursor: pointer;
+  background: var(--accent-soft, #0ea5e9);
+  border: 1px solid var(--accent-border, #334155);
+  color: var(--accent, #fff);
   border-radius: 0.5rem;
   width: 2rem;
   height: 2rem;
 }
 
 .modal-close:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent, #38bdf8);
   outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .modal-overlay,
-  .modal {
-    transition: none;
-  }
+  .modal { transition: none; }
 }
-
 </style>
 </head>
-	<body>
+
+<body>
 
 <template id="firstButton">
   <p>This it the first button's modal pop-up.</p>
-  <p>Anything can go here, paragraph tags, buttons, images, whatever</p>
-  <button>This button doesn't do a dang thing, but I'm putting it here to show that I can have one</button>
+  <button>This button doesn't do a dang thing</button>
 </template>
 
 <template id="secondButton">
   <p>This it the second button's modal pop-up.</p>
-  <p>Like I said in a different modal, anything could go here. even forms, or React chunks, or whatever.</p>
-	<form action="#" method="post">
-	  <label>Name:
-	    <input type="text" name="name" required>
-	  </label>
-	  <label>Email:
-	    <input type="email" name="email" required>
-	  </label>
-	  <button type="submit">Submit</button>
-	</form>
-  </template>
-
-<template id="thirdButton">
-  <p style="color:#fff;">Third button's modal pop-up</p>
-  <p>You should look at the other two, I've run out of ideas here</p>
+  <form action="#" method="post">
+    <label>Name:
+      <input type="text" name="name" required>
+    </label>
+    <label>Email:
+      <input type="email" name="email" required>
+    </label>
+    <button type="submit">Submit</button>
+  </form>
 </template>
 
-
+<template id="thirdButton">
+  <p>Third button's modal pop-up</p>
+</template>
 
 <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
   <div class="modal">
@@ -118,57 +111,115 @@
       <h2 class="modal-title" id="modalTitle"></h2>
       <button class="modal-close" aria-label="Close dialog">✕</button>
     </div>
-
-    <div class="modal-body" id="modalBody">
-      <div id="modalStaticContent"></div><!-- populate content from Template tags here, matching up the trigger's `data-modal-id` value and Template tag's ID  -->
-
+    <div class="modal-body">
+      <div id="modalStaticContent"></div>
+      <div id="modalReactRoot"></div>
     </div>
   </div>
 </div>
-<button data-modal-id="firstButton" class="open-modal" data-modal-title="First Modal" >First Modal</button>
-<button data-modal-id="secondButton" class="open-modal" data-modal-title="Second Modal" >Second Modal</button>
-<button data-modal-id="thirdButton" class="open-modal" data-modal-title="Third Modal" >Third Modal</button>
 
+<button data-modal-id="firstButton" class="open-modal" data-modal-title="First Modal">First Modal</button>
+<button data-modal-id="secondButton" class="open-modal" data-modal-title="Second Modal">Second Modal</button>
+<button data-modal-id="thirdButton" class="open-modal" data-modal-title="Third Modal">Third Modal</button>
+
+<script>
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
+const modalStatic = document.getElementById("modalStaticContent");
+const modalBox = modal.querySelector(".modal");
+const closeBtn = modal.querySelector(".modal-close");
+
+let lastFocusedElement = null;
+let reactRoot = null;
+const modalReactContainer = document.getElementById("modalReactRoot");
+
+function isModalOpen() {
+  return modal.classList.contains("is-open");
+}
+
+function trapFocus(e) {
+  if (e.key !== "Tab") return;
+
+  const focusable = modal.querySelectorAll(
+    'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  );
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+function handleBackdropClick(e) {
+  if (e.target === modal) closeModal();
+}
+
+function handleKeydown(e) {
+  if (e.key === "Escape" && isModalOpen()) {
+    e.preventDefault();
+    closeModal();
+  }
+}
+
+function openModalFromButton(btn) {
+  lastFocusedElement = document.activeElement;
+  modalTitle.textContent = btn.dataset.modalTitle || "";
+
+  modalStatic.replaceChildren();
+  if (btn.dataset.modalId) {
+    const tpl = document.getElementById(btn.dataset.modalId);
+    if (tpl) modalStatic.appendChild(tpl.content.cloneNode(true));
+  }
+
+  // React guarded
+  if (window.React && window.ReactDOM && btn.dataset.modalReact) {
+    const Component = window.modalReactComponents?.[btn.dataset.modalReact];
+    if (Component) {
+      if (!reactRoot) reactRoot = ReactDOM.createRoot(modalReactContainer);
+      reactRoot.render(React.createElement(Component));
+    }
+  } else if (reactRoot) {
+    reactRoot.render(null);
+  }
+
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  modal.addEventListener("click", handleBackdropClick);
+  document.addEventListener("keydown", handleKeydown);
+  document.addEventListener("keydown", trapFocus);
+
+  closeBtn.focus();
+}
+
+function closeModal() {
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+
+  modal.removeEventListener("click", handleBackdropClick);
+  document.removeEventListener("keydown", handleKeydown);
+  document.removeEventListener("keydown", trapFocus);
+
+  if (reactRoot) reactRoot.render(null);
+  if (lastFocusedElement) lastFocusedElement.focus();
+}
+
+// Prevent inside clicks from bubbling to overlay
+modalBox.addEventListener("click", e => e.stopPropagation());
+
+// Wire buttons
+document.querySelectorAll(".open-modal").forEach(btn =>
+  btn.addEventListener("click", () => openModalFromButton(btn))
+);
+
+closeBtn.addEventListener("click", closeModal);
+</script>
 </body>
 </html>
-<script>
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalStatic = document.getElementById("modalStaticContent");
-  const closeBtn = modal.querySelector(".modal-close");
-
-  let lastFocusedElement = null;
-
-  function openModalFromButton(btn) {
-    lastFocusedElement = document.activeElement;
-
-    modalTitle.textContent = btn.dataset.modalTitle || "";
-
-    // --- Static content ---
-    modalStatic.innerHTML = "";
-    if (btn.dataset.modalId) {
-      const tpl = document.getElementById(btn.dataset.modalId);
-      if (tpl) modalStatic.appendChild(tpl.content.cloneNode(true));
-    }
-
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-    closeBtn.focus();
-  }
-
-  function closeModal() {
-    modal.classList.remove("is-open");
-    modal.setAttribute("aria-hidden", "true");
-
-    if (lastFocusedElement) {
-      lastFocusedElement.focus();
-    }
-  }
-
-  document.querySelectorAll(".open-modal").forEach((btn) => {
-    btn.addEventListener("click", () => openModalFromButton(btn));
-  });
-
-  closeBtn.addEventListener("click", closeModal);
-</script>
-	
