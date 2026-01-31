@@ -1,0 +1,164 @@
+<style>
+ 
+ 
+ .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: var(--surface, #0f172a);
+  color: var(--text, #f1f5f9);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 32rem;
+  padding: 1.5rem;
+
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.7);
+
+  transform: translateY(12px) scale(0.97);
+  opacity: 0;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.modal-overlay.is-open .modal {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--accent-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  color: var(--accent);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  border-radius: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal {
+    transition: none;
+  }
+}
+
+</style>
+
+
+<template id="firstButton">
+  <p>This it the first button's modal pop-up.</p>
+  <p>Anything can go here, paragraph tags, buttons, images, whatever</p>
+  <button>This button doesn't do a dang thing, but I'm putting it here to show that I can have one</button>
+</template>
+
+<template id="secondButton">
+  <p>This it the second button's modal pop-up.</p>
+  <p>Like I said in a different modal, anything could go here. even forms, or React chunks, or whatever.</p>
+	<form action="#" method="post">
+	  <label>Name:
+	    <input type="text" name="name" required>
+	  </label>
+	  <label>Email:
+	    <input type="email" name="email" required>
+	  </label>
+	  <button type="submit">Submit</button>
+	</form>
+  </template>
+
+<template id="thirdButton">
+  <p style="color:#fff;">Third button's modal pop-up</p>
+  <p>You should look at the other two, I've run out of ideas here</p>
+</template>
+
+
+
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <button class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+
+    <div class="modal-body" id="modalBody">
+      <div id="modalStaticContent"></div><!-- populate content from Template tags here, matching up the trigger's `data-modal-id` value and Template tag's ID  -->
+
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalStatic = document.getElementById("modalStaticContent");
+  const closeBtn = modal.querySelector(".modal-close");
+
+  let lastFocusedElement = null;
+
+  function openModalFromButton(btn) {
+    lastFocusedElement = document.activeElement;
+
+    modalTitle.textContent = btn.dataset.modalTitle || "";
+
+    // --- Static content ---
+    modalStatic.innerHTML = "";
+    if (btn.dataset.modalId) {
+      const tpl = document.getElementById(btn.dataset.modalId);
+      if (tpl) modalStatic.appendChild(tpl.content.cloneNode(true));
+    }
+
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+
+    if (lastFocusedElement) {
+      lastFocusedElement.focus();
+    }
+  }
+
+  document.querySelectorAll(".open-modal").forEach((btn) => {
+    btn.addEventListener("click", () => openModalFromButton(btn));
+  });
+
+  closeBtn.addEventListener("click", closeModal);
+</script>
