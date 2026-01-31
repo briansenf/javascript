@@ -110,6 +110,25 @@
   outline-offset: 2px;
 }
 
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center; 
+}
+
+.buttonHolder {
+  display: flex;
+  flex-direction: column; 
+  gap: 1rem;
+}
+
+@media (min-width: 800px) {
+  .buttonHolder {
+    flex-direction: row;
+  }
+}
+  
 @media (prefers-reduced-motion: reduce) {
   .modal-overlay,
   .modal { transition: none; }
@@ -155,10 +174,12 @@
   </div>
 </div>
 
+<div class="modalHolder>
 <button data-modal-id="firstButton" class="open-modal" data-modal-title="First Modal">First Modal</button>
 <button data-modal-id="secondButton" class="open-modal" data-modal-title="Second Modal">Second Modal</button>
 <button data-modal-id="thirdButton" class="open-modal" data-modal-title="Third Modal">Third Modal</button>
-
+</div>  
+  
 <script>
 const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modalTitle");
