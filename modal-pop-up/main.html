@@ -1,6 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modal Pop-up test</title>
+
 <style>
- 
- 
  .modal-overlay {
   position: fixed;
   inset: 0;
@@ -77,7 +82,8 @@
 }
 
 </style>
-
+</head>
+	<body>
 
 <template id="firstButton">
   <p>This it the first button's modal pop-up.</p>
@@ -119,9 +125,12 @@
     </div>
   </div>
 </div>
+<button data-modal-id="firstButton" class="open-modal" data-modal-title="First Modal" >First Modal</button>
+<button data-modal-id="secondButton" class="open-modal" data-modal-title="Second Modal" >Second Modal</button>
+<button data-modal-id="thirdButton" class="open-modal" data-modal-title="Third Modal" >Third Modal</button>
 
-
-
+</body>
+</html>
 <script>
   const modal = document.getElementById("modal");
   const modalTitle = document.getElementById("modalTitle");
@@ -162,3 +171,4 @@
 
   closeBtn.addEventListener("click", closeModal);
 </script>
+	
