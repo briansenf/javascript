@@ -235,17 +235,6 @@ function openModalFromButton(btn) {
     if (tpl) modalStatic.appendChild(tpl.content.cloneNode(true));
   }
 
-  // React guarded
-  if (window.React && window.ReactDOM && btn.dataset.modalReact) {
-    const Component = window.modalReactComponents?.[btn.dataset.modalReact];
-    if (Component) {
-      if (!reactRoot) reactRoot = ReactDOM.createRoot(modalReactContainer);
-      reactRoot.render(React.createElement(Component));
-    }
-  } else if (reactRoot) {
-    reactRoot.render(null);
-  }
-
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -266,7 +255,6 @@ function closeModal() {
   document.removeEventListener("keydown", handleKeydown);
   document.removeEventListener("keydown", trapFocus);
 
-  if (reactRoot) reactRoot.render(null);
   if (lastFocusedElement) lastFocusedElement.focus();
 }
 
