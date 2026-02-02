@@ -1,6 +1,7 @@
 # Accessibility-First Vanilla JavaScript Modal
 
 A framework-free modal. Designed to be reusable, accessible, and extensible without adding unnecessary DOM complexity or dependencies.
+demo: https://htmlpreview.github.io/?https://github.com/briansenf/javascript/blob/main/modal-pop-up/main.html
 
 ---
 
